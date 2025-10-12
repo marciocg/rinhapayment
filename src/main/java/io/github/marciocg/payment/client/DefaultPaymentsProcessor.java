@@ -24,14 +24,14 @@ import jakarta.ws.rs.core.MediaType;
  * }
  */
 
-@RegisterRestClient(baseUri = "https://httpbin.org/post")
-// @RegisterRestClient(baseUri = "http://localhost:8001")
+// @RegisterRestClient(baseUri = "https://httpbin.org/post")
+@RegisterRestClient(baseUri = "http://localhost:8001/payments")
 public interface DefaultPaymentsProcessor {
 
     @POST
     @Path("/payments")
     @Produces(MediaType.APPLICATION_JSON)
-    public PaymentsProcessorResponse postPayment(PaymentsProcessorRequest request);
+    public PaymentsProcessorResponse processPayment(PaymentsProcessorRequest request);
 
     
 }

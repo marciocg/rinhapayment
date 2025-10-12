@@ -6,5 +6,5 @@ import java.util.UUID;
 public record PaymentsProcessorRequest(
     UUID correlationId,
     BigDecimal amount,
-    String createdAt
+    String requestedAt
 ) { }

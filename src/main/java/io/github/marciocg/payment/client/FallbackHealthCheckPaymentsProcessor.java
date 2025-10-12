@@ -22,8 +22,8 @@ import jakarta.ws.rs.core.MediaType;
  * }
  */
 
-@RegisterRestClient(baseUri = "https://httpbin.org/post")
-// @RegisterRestClient(baseUri = "http://localhost:8002")
+// @RegisterRestClient(baseUri = "https://httpbin.org/post")
+@RegisterRestClient(baseUri = "http://localhost:8002/payments/service-health")
 public interface FallbackHealthCheckPaymentsProcessor {
 
     @GET

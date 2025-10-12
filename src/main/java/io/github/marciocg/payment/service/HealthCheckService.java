@@ -12,6 +12,7 @@ import jakarta.inject.Inject;
 import io.github.marciocg.payment.client.DefaultHealthCheckPaymentsProcessor;
 import io.github.marciocg.payment.client.FallbackHealthCheckPaymentsProcessor;
 import io.github.marciocg.payment.dto.ProcessorHealth;
+import io.quarkus.logging.Log;
 import io.quarkus.scheduler.Scheduled;
 
 @ApplicationScoped
@@ -26,7 +27,7 @@ public class HealthCheckService {
     @RestClient
     FallbackHealthCheckPaymentsProcessor fallbackClient;
 
-    @Scheduled(every = "PT0.5s")
+    @Scheduled(every = "1s")
     void checkHealth() {
         try {
             var res = defaultClient.getHealth();
@@ -47,6 +48,7 @@ public class HealthCheckService {
         } catch (Exception e) {
             healthMap.put("fallback", new ProcessorHealth(true, 0));
         }
+        Log.infof("Health status: %s", healthMap);
     }
 
     public boolean isHealthy(String processor) {
