@@ -3,6 +3,7 @@ package io.github.marciocg.payment.api;
 import io.github.marciocg.payment.dto.PaymentRequest;
 import io.github.marciocg.payment.dto.SummaryResponse;
 import io.github.marciocg.payment.model.Payment;
+import io.github.marciocg.payment.service.PaymentService;
 import io.github.marciocg.payment.service.PaymentWorker;
 // import io.quarkus.redis.datasource.RedisDataSource;
 import io.smallrye.common.annotation.RunOnVirtualThread;

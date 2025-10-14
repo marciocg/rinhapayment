@@ -18,8 +18,7 @@ import jakarta.persistence.Index;
 
 @Entity
 @Table(name = "payments", indexes = {
-    @Index(name = "idx_payment_created_at", columnList = "createdAt"),
-    @Index(name = "idx_payment_payment_type", columnList = "paymentType")
+    @Index(name = "idx_payment_created_at", columnList = "createdAt") //, @Index(name = "idx_payment_payment_type", columnList = "paymentType")
 })
 @NamedQueries({
     @NamedQuery(
