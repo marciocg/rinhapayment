@@ -24,7 +24,7 @@ import jakarta.ws.rs.core.MediaType;
  */
 
 // @RegisterRestClient(baseUri = "https://httpbin.org/post")
-@RegisterRestClient(baseUri = "http://localhost:8001/payments/service-health")
+@RegisterRestClient(baseUri = "http://localhost:8001")
 public interface DefaultHealthCheckPaymentsProcessor {
 
     @GET

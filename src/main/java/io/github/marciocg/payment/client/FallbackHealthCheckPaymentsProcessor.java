@@ -23,7 +23,7 @@ import jakarta.ws.rs.core.MediaType;
  */
 
 // @RegisterRestClient(baseUri = "https://httpbin.org/post")
-@RegisterRestClient(baseUri = "http://localhost:8002/payments/service-health")
+@RegisterRestClient(baseUri = "http://localhost:8002")
 public interface FallbackHealthCheckPaymentsProcessor {
 
     @GET

@@ -27,10 +27,11 @@ public class HealthCheckService {
     @RestClient
     FallbackHealthCheckPaymentsProcessor fallbackClient;
 
-    @Scheduled(every = "1s")
+    @Scheduled(every = "6s")
     void checkHealth() {
         try {
             var res = defaultClient.getHealth();
+            // Log.infof(" *** RES Default processor health: %s -- %s", res, res.toString());
             setHealth("default", res.failing(), res.minResponseTime());
             // healthMap.put("default", new ProcessorHealth(res.failing(),
             // res.minResponseTime()));
@@ -41,6 +42,7 @@ public class HealthCheckService {
 
         try {
             var res = fallbackClient.getHealth();
+            // Log.infof(" *** RES Fallback processor health: %s -- %s", res, res.toString());
             setHealth("fallback", res.failing(), res.minResponseTime());
             // healthMap.put("fallback", new ProcessorHealth(res.failing(),
             // res.minResponseTime()));

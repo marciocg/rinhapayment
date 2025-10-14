@@ -12,7 +12,6 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashMap;
@@ -28,6 +27,9 @@ public class PaymentResource {
     @Inject
     PaymentWorker worker;
 
+    @Inject
+    PaymentService service;
+
     // @Inject
     // RedisDataSource redis;
 
@@ -39,7 +41,8 @@ public class PaymentResource {
         Payment payment = new Payment();
         payment.correlationId = request.correlationId();
         payment.amount = request.amount();
-        worker.enqueue(payment);
+        service.sendToDefaultProcessor(payment);
+        // worker.enqueue(payment);
         return Response.accepted().build();
     }
 

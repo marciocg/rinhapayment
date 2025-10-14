@@ -3,6 +3,7 @@ package io.github.marciocg.payment.service;
 import java.time.Instant;
 
 import org.eclipse.microprofile.faulttolerance.Fallback;
+import org.eclipse.microprofile.faulttolerance.Retry;
 // import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
@@ -31,7 +32,7 @@ public class PaymentService {
     @RestClient
     FallbackPaymentsProcessor fallbackClient;
 
-    // @Retry(maxRetries = 2, delay = 100)
+    @Retry(maxRetries = 2, delay = 200)
     @Fallback(fallbackMethod = "sendToFallbackProcessor")
     public void sendToDefaultProcessor(Payment payment) {
         if (!health.isHealthy("default")) {
@@ -45,7 +46,8 @@ public class PaymentService {
         // saveToRedis(payment);
     }
 
-    @Fallback(fallbackMethod = "sendToDefaultProcessor")
+    @Retry(maxRetries = 2, delay = 200)
+    // @Fallback(fallbackMethod = "sendToDefaultProcessor")
     public void sendToFallbackProcessor(Payment payment) {
         if (!health.isHealthy("fallback")) {
             Log.info("[SKIP] Fallback processor is failing");
