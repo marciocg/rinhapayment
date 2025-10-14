@@ -15,7 +15,7 @@ public class PaymentResourceTest {
     @Test
     void testPostPayment() {
         var payload = Map.of(
-            "correlationId", "test-123",
+            "correlationId", "123e4567-e89b-42d3-a456-556642440000",
             "amount", new BigDecimal("99.99")
         );
 

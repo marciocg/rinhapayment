@@ -25,7 +25,7 @@ public class PaymentWorker {
             while (true) {
                 try {
                     Payment p = queue.take();
-                    service.sendToDefault(p);
+                    service.sendToDefaultProcessor(p);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
