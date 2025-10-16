@@ -45,7 +45,7 @@ services:
       - TRANSACTION_FEE=0.07
       - RATE_LIMIT_SECONDS=5
       - INITIAL_TOKEN=123
-      - DB_CONNECTION_STRING='Host=/var/run/postgresql;Port=5432;Database=rinha;Username=postgres;Password=postgres;Minimum Pool Size=15;Maximum Pool Size=20;Connection Pruning Interval=3'
+      - DB_CONNECTION_STRING=Host=/var/run/postgresql;Port=5432;Database=rinha;Username=postgres;Password=postgres;Minimum Pool Size=15;Maximum Pool Size=20;Connection Pruning Interval=3
     ports:
       - 8001:8080
     volumes:
@@ -69,7 +69,7 @@ services:
       - TRANSACTION_FEE=0.10
       - RATE_LIMIT_SECONDS=5
       - INITIAL_TOKEN=123
-      - DB_CONNECTION_STRING='Host=/var/run/postgresql;Port=5432;Database=rinha;Username=postgres;Password=postgres;Minimum Pool Size=15;Maximum Pool Size=20;Connection Pruning Interval=3'
+      - DB_CONNECTION_STRING=Host=/var/run/postgresql;Port=5432;Database=rinha;Username=postgres;Password=postgres;Minimum Pool Size=15;Maximum Pool Size=20;Connection Pruning Interval=3
     ports:
       - 8002:8080
     volumes:
