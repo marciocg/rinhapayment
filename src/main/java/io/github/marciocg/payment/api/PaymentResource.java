@@ -19,14 +19,13 @@ import java.util.HashMap;
 // import java.util.List;
 import java.util.Map;
 
+import org.hibernate.exception.ConstraintViolationException;
+
 @ApplicationScoped
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class PaymentResource {
-
-    @Inject
-    PaymentWorker worker;
 
     @Inject
     PaymentService service;
@@ -42,8 +41,12 @@ public class PaymentResource {
         Payment payment = new Payment();
         payment.correlationId = request.correlationId();
         payment.amount = request.amount();
+/*         try {
+            service.sendToDefaultProcessor(payment);
+        } catch (Exception e) {
+            return Response.noContent().build();
+        } */
         service.sendToDefaultProcessor(payment);
-        // worker.enqueue(payment);
         return Response.accepted().build();
     }
 
@@ -63,21 +66,26 @@ public class PaymentResource {
         return response;
     }
 
- /*    @GET
-    @Path("/payments-summary-redis")
-    public Map<String, SummaryResponse> summaryRedis() {
-        Map<String, SummaryResponse> response = new HashMap<>();
-        for (String type : List.of("default", "fallback")) {
-            String key = "summary:" + type;
-            var hashOps = redis.hash(String.class);
-
-            String totalRequestsStr = hashOps.hget(key, "totalRequests");
-            String totalAmountStr = hashOps.hget(key, "totalAmount");
-
-            long totalRequests = Long.parseLong(totalRequestsStr != null ? totalRequestsStr : "0");
-            BigDecimal totalAmount = new BigDecimal(totalAmountStr != null ? totalAmountStr : "0");
-            response.put(type, new SummaryResponse(totalRequests, totalAmount));
-        }
-        return response;
-    } */
+    /*
+     * @GET
+     * 
+     * @Path("/payments-summary-redis")
+     * public Map<String, SummaryResponse> summaryRedis() {
+     * Map<String, SummaryResponse> response = new HashMap<>();
+     * for (String type : List.of("default", "fallback")) {
+     * String key = "summary:" + type;
+     * var hashOps = redis.hash(String.class);
+     * 
+     * String totalRequestsStr = hashOps.hget(key, "totalRequests");
+     * String totalAmountStr = hashOps.hget(key, "totalAmount");
+     * 
+     * long totalRequests = Long.parseLong(totalRequestsStr != null ?
+     * totalRequestsStr : "0");
+     * BigDecimal totalAmount = new BigDecimal(totalAmountStr != null ?
+     * totalAmountStr : "0");
+     * response.put(type, new SummaryResponse(totalRequests, totalAmount));
+     * }
+     * return response;
+     * }
+     */
 }

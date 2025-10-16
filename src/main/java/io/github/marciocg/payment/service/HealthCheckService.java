@@ -27,7 +27,7 @@ public class HealthCheckService {
     @RestClient
     FallbackHealthCheckPaymentsProcessor fallbackClient;
 
-    @Scheduled(every = "6s")
+    @Scheduled(every = "5s")
     void checkHealth() {
         try {
             var res = defaultClient.getHealth();

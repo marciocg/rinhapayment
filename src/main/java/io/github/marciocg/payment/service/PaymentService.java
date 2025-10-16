@@ -25,12 +25,13 @@ public class PaymentService {
     @Inject
     HealthCheckService health;
 
-    @Inject
     @RestClient
     DefaultPaymentsProcessor defaultClient;
-    @Inject
     @RestClient
     FallbackPaymentsProcessor fallbackClient;
+
+    @Inject
+    PaymentWorker worker;
 
     @Retry(maxRetries = 2, delay = 200)
     @Fallback(fallbackMethod = "sendToFallbackProcessor")
@@ -47,7 +48,8 @@ public class PaymentService {
     }
 
     @Retry(maxRetries = 2, delay = 200)
-    // @Fallback(fallbackMethod = "sendToDefaultProcessor")
+    // @Fallback(fallbackMethod = "sendToWorkerQueue")
+    @Fallback(fallbackMethod = "enqueueAndProcess")
     public void sendToFallbackProcessor(Payment payment) {
         if (!health.isHealthy("fallback")) {
             Log.info("[SKIP] Fallback processor is failing");
@@ -83,6 +85,15 @@ public class PaymentService {
             }
 
         }
+    }
+
+    public void sendToWorkerQueue(Payment payment) {
+        Log.warnf("Enqueue payment %s to be processed later", payment.correlationId);
+        worker.enqueue(payment);
+    }
+
+    public void enqueueAndProcess(Payment payment) {
+        worker.enqueueAndProcess(payment);
     }
 
     /*
