@@ -36,7 +36,7 @@ public class PaymentResource {
     @Transactional
     @POST
     @Path("/payments")
-    @RunOnVirtualThread
+    // @RunOnVirtualThread
     public Response receive(PaymentRequest request) {
         Payment payment = new Payment();
         payment.correlationId = request.correlationId();

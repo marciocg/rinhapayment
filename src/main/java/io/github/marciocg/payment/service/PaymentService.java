@@ -37,13 +37,17 @@ public class PaymentService {
     @Fallback(fallbackMethod = "sendToFallbackProcessor")
     public void sendToDefaultProcessor(Payment payment) {
         if (!health.isHealthy("default")) {
-            Log.info("[SKIP] Default processor is failing");
+            Log.debug("[SKIP] Default processor is failing " + health.toString());
             return;
         }
         payment.paymentType = "default";
         payment.createdAt = Instant.now();
         process(payment);
-        payment.persist();
+        try {
+          payment.persist();  
+        } catch (Exception e) {
+            Log.errorf("*** Erro persistindo payment uuid %s by default processor: %s", payment.correlationId, e.getMessage());
+        } 
         // saveToRedis(payment);
     }
 
@@ -52,13 +56,17 @@ public class PaymentService {
     @Fallback(fallbackMethod = "enqueueAndProcess")
     public void sendToFallbackProcessor(Payment payment) {
         if (!health.isHealthy("fallback")) {
-            Log.info("[SKIP] Fallback processor is failing");
+            Log.debug("[SKIP] Fallback processor is failing" + health.toString());
             return;
         }
         payment.paymentType = "fallback";
         payment.createdAt = Instant.now();
         process(payment);
-        payment.persist();
+        try {
+          payment.persist();  
+        } catch (Exception e) {
+            Log.errorf("*** Erro persistindo payment uuid %s by fallback processor: %s", payment.correlationId, e.getMessage());
+        } 
         // saveToRedis(payment);
     }
 
@@ -68,9 +76,9 @@ public class PaymentService {
             try {
                 var res = defaultClient.processPayment(new PaymentsProcessorRequest(payment.correlationId,
                         payment.amount, payment.createdAt.toString()));
-                // Log.info("default processor: " + res.message());
+                Log.debug("default processor: " + res.message());
             } catch (Exception e) {
-                Log.errorf("Error processing payment %s by default processor: %s", payment.correlationId,
+                Log.errorf("*** Error processing payment %s by default processor: %s", payment.correlationId,
                         e.getMessage());
             }
 
@@ -78,9 +86,9 @@ public class PaymentService {
             try {
                 var res = fallbackClient.processPayment(new PaymentsProcessorRequest(payment.correlationId,
                         payment.amount, payment.createdAt.toString()));
-                // Log.info("fallback processor: " + res.message());
+                Log.debug("fallback processor: " + res.message());
             } catch (Exception e) {
-                Log.errorf("Error processing payment %s by fallback processor: %s", payment.correlationId,
+                Log.errorf("*** Error processing payment %s by fallback processor: %s", payment.correlationId,
                         e.getMessage());
             }
 

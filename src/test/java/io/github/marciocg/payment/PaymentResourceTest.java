@@ -24,7 +24,7 @@ public class PaymentResourceTest {
             .body(payload)
             .post("/payments")
             .then()
-            .statusCode(204);
+            .statusCode(201);
     }
 
     @Test

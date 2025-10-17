@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
+import jakarta.annotation.PostConstruct;
 // import jakarta.inject.Singleton;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -27,11 +28,12 @@ public class HealthCheckService {
     @RestClient
     FallbackHealthCheckPaymentsProcessor fallbackClient;
 
+    @PostConstruct
     @Scheduled(every = "5s")
     void checkHealth() {
         try {
             var res = defaultClient.getHealth();
-            // Log.infof(" *** RES Default processor health: %s -- %s", res, res.toString());
+            // Log.debugf(" *** RES Default processor health: %s -- %s", res, res.toString());
             setHealth("default", res.failing(), res.minResponseTime());
             // healthMap.put("default", new ProcessorHealth(res.failing(),
             // res.minResponseTime()));
@@ -42,7 +44,7 @@ public class HealthCheckService {
 
         try {
             var res = fallbackClient.getHealth();
-            // Log.infof(" *** RES Fallback processor health: %s -- %s", res, res.toString());
+            // Log.debugf(" *** RES Fallback processor health: %s -- %s", res, res.toString());
             setHealth("fallback", res.failing(), res.minResponseTime());
             // healthMap.put("fallback", new ProcessorHealth(res.failing(),
             // res.minResponseTime()));
@@ -50,10 +52,11 @@ public class HealthCheckService {
         } catch (Exception e) {
             healthMap.put("fallback", new ProcessorHealth(true, 0));
         }
-        Log.infof("Health status: %s", healthMap);
+        Log.debugf("Health status: %s", healthMap);
     }
 
     public boolean isHealthy(String processor) {
+    Log.debug("Checking health for processor: " + processor + " -> " + healthMap.get(processor));
         return Optional.ofNullable(healthMap.get(processor))
                 .map(h -> !h.failing())
                 .orElse(false);
