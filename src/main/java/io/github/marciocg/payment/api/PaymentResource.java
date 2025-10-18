@@ -1,25 +1,28 @@
 package io.github.marciocg.payment.api;
 
-import io.github.marciocg.payment.dto.PaymentRequest;
-import io.github.marciocg.payment.dto.SummaryResponse;
-import io.github.marciocg.payment.model.Payment;
-import io.github.marciocg.payment.service.PaymentService;
-import io.github.marciocg.payment.service.PaymentWorker;
-// import io.quarkus.redis.datasource.RedisDataSource;
-import io.smallrye.common.annotation.RunOnVirtualThread;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashMap;
 // import java.util.List;
 import java.util.Map;
 
-import org.hibernate.exception.ConstraintViolationException;
+import io.github.marciocg.payment.dto.PaymentRequest;
+import io.github.marciocg.payment.dto.SummaryResponse;
+import io.github.marciocg.payment.model.Payment;
+import io.github.marciocg.payment.service.PaymentService;
+// import io.quarkus.redis.datasource.RedisDataSource;
+import io.smallrye.common.annotation.RunOnVirtualThread;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 @Path("/")

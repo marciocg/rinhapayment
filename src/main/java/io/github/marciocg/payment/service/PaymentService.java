@@ -6,7 +6,6 @@ import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Retry;
 // import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-
 import io.github.marciocg.payment.client.DefaultPaymentsProcessor;
 import io.github.marciocg.payment.client.FallbackPaymentsProcessor;
 import io.github.marciocg.payment.dto.PaymentsProcessorRequest;
@@ -44,10 +43,11 @@ public class PaymentService {
         payment.createdAt = Instant.now();
         process(payment);
         try {
-          payment.persist();  
+            payment.persist();
         } catch (Exception e) {
-            Log.errorf("*** Erro persistindo payment uuid %s by default processor: %s", payment.correlationId, e.getMessage());
-        } 
+            Log.errorf("*** Erro persistindo payment uuid %s by default processor: %s", payment.correlationId,
+                    e.getMessage());
+        }
         // saveToRedis(payment);
     }
 
@@ -63,10 +63,11 @@ public class PaymentService {
         payment.createdAt = Instant.now();
         process(payment);
         try {
-          payment.persist();  
+            payment.persist();
         } catch (Exception e) {
-            Log.errorf("*** Erro persistindo payment uuid %s by fallback processor: %s", payment.correlationId, e.getMessage());
-        } 
+            Log.errorf("*** Erro persistindo payment uuid %s by fallback processor: %s", payment.correlationId,
+                    e.getMessage());
+        }
         // saveToRedis(payment);
     }
 
