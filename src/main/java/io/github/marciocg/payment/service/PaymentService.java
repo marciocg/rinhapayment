@@ -14,6 +14,7 @@ import io.quarkus.logging.Log;
 // import io.quarkus.redis.datasource.RedisDataSource;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.WebApplicationException;
 
 @ApplicationScoped
 public class PaymentService {
@@ -37,7 +38,7 @@ public class PaymentService {
     public void sendToDefaultProcessor(Payment payment) {
         if (!health.isHealthy("default")) {
             Log.debug("[SKIP] Default processor is failing " + health.toString());
-            return;
+            throw new WebApplicationException("Default processor is unhealthy"); 
         }
         payment.paymentType = "default";
         payment.createdAt = Instant.now();
@@ -57,7 +58,7 @@ public class PaymentService {
     public void sendToFallbackProcessor(Payment payment) {
         if (!health.isHealthy("fallback")) {
             Log.debug("[SKIP] Fallback processor is failing" + health.toString());
-            return;
+            throw new WebApplicationException("Fallback processor is unhealthy");
         }
         payment.paymentType = "fallback";
         payment.createdAt = Instant.now();
