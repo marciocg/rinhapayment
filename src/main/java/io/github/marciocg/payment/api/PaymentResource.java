@@ -1,9 +1,6 @@
 package io.github.marciocg.payment.api;
 
-import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.HashMap;
-// import java.util.List;
 import java.util.Map;
 
 import io.github.marciocg.payment.dto.PaymentRequest;
