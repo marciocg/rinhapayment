@@ -6,7 +6,7 @@ If you want to learn more about Quarkus, please visit its website: <https://quar
 
 ## Subir o ambiente da rinha:
 ```shell script
-podman compose -f .\src\main\resources\docker-compose.yml up --force-recreate --abort-on-container-failure --pull --build -V --always-recreate-deps -d
+podman compose -f .\src\main\resources\payment-processor\docker-compose.yml up --force-recreate --abort-on-container-failure --pull --build -V --always-recreate-deps -d
 ```
 
 ## Running the application in dev mode
@@ -54,7 +54,7 @@ Or, if you don't have GraalVM installed, you can run the native executable build
 ./mvnw package -Dnative -Dquarkus.native.container-build=true
 ```
 
-You can then execute your native executable with: `./target/rinhapayment-0.5.0-SNAPSHOT-runner`
+You can then execute your native executable with: `./target/rinhapayment-0.6.0-SNAPSHOT-runner`
 
 If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
 
