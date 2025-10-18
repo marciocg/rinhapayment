@@ -3,9 +3,14 @@ package io.github.marciocg.payment.model;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import io.github.marciocg.payment.dto.SummaryResponseByPaymentType;
+import io.github.marciocg.payment.dto.SummaryResponse;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Parameters;
@@ -41,4 +46,27 @@ public class Payment extends PanacheEntityBase {
         return query.list();
     }
 
+    public static Map<String, SummaryResponse> streamSummaryByPaymentType(Instant from, Instant to) {
+        try (Stream<Payment> s = Payment.streamAll()) {
+            Map<String, SummaryResponse> map = s
+                .filter(p -> p.createdAt != null)
+                .filter(p -> (from == null || !p.createdAt.isBefore(from)) && (to == null || !p.createdAt.isAfter(to)))
+                .collect(Collectors.groupingBy(
+                    p -> Objects.toString(p.paymentType, ""),
+                    Collectors.collectingAndThen(Collectors.toList(), list -> {
+                        long count = list.size();
+                        BigDecimal sum = list.stream()
+                            .map(x -> x.amount)
+                            .filter(Objects::nonNull)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                        return new SummaryResponse(count, sum);
+                    })
+                ));
+
+            // Ensure both keys exist
+            map.putIfAbsent("default", new SummaryResponse(0L, BigDecimal.ZERO));
+            map.putIfAbsent("fallback", new SummaryResponse(0L, BigDecimal.ZERO));
+            return map;
+        }
+    }
 }

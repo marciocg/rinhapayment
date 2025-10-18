@@ -16,6 +16,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -55,19 +56,18 @@ public class PaymentResource {
 
     @GET
     @Path("/payments-summary")
-    @RunOnVirtualThread
-    public Map<String, SummaryResponse> summary(@QueryParam("from") Instant from,
-            @QueryParam("to") Instant to) {
-        var result = Payment.getSummaryByPaymentType(from, to);
-        Map<String, SummaryResponse> response = new HashMap<>();
-        for (var row : result) {
-            String type = (String) row.paymentType();
-            long totalRequests = (Long) row.summaryResponse().totalRequests();
-            BigDecimal totalAmount = (BigDecimal) row.summaryResponse().totalAmount();
-            response.put(type, new SummaryResponse(totalRequests, totalAmount));
+    // @RunOnVirtualThread
+    public Map<String, SummaryResponse> summary(@QueryParam("from") Instant from, @QueryParam("to") Instant to) {
+        if (from == null) {
+            from = Instant.EPOCH;
         }
-        return response;
+        if (to == null) {
+            to = Instant.parse("9999-01-01T00:00:00Z");
+        }
+
+        return Payment.streamSummaryByPaymentType(from, to);
     }
+}
 
     /*
      * @GET
@@ -91,4 +91,3 @@ public class PaymentResource {
      * return response;
      * }
      */
-}
