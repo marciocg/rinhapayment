@@ -33,7 +33,7 @@ public class PaymentResource {
     // @Inject
     // RedisDataSource redis;
 
-    @Transactional
+    // @Transactional
     @POST
     @Path("/payments")
     // @RunOnVirtualThread

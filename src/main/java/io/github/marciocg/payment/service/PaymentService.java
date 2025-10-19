@@ -2,6 +2,7 @@ package io.github.marciocg.payment.service;
 
 import java.time.Instant;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.eclipse.microprofile.faulttolerance.Fallback;
@@ -13,6 +14,7 @@ import io.github.marciocg.payment.client.FallbackPaymentsProcessor;
 import io.github.marciocg.payment.dto.PaymentsProcessorRequest;
 import io.github.marciocg.payment.model.Payment;
 import io.quarkus.logging.Log;
+import java.lang.Runnable;
 // import io.quarkus.redis.datasource.RedisDataSource;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -23,7 +25,7 @@ public class PaymentService {
 
     // @Inject
     // RedisDataSource redis;
-    private final Executor executor = Executors.newVirtualThreadPerTaskExecutor();
+    private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
     @Inject
     HealthCheckService health;
@@ -41,7 +43,7 @@ public class PaymentService {
     public void sendToDefaultProcessor(Payment payment) {
         if (!health.isHealthy("default")) {
             Log.debug("[SKIP] Default processor is failing " + health.toString());
-            throw new WebApplicationException("Default processor is unhealthy"); 
+            throw new WebApplicationException("Default processor is unhealthy");
         }
         payment.paymentType = "default";
         payment.createdAt = Instant.now();
@@ -56,8 +58,10 @@ public class PaymentService {
     }
 
     @Retry(maxRetries = 2, delay = 200)
-    // @Fallback(fallbackMethod = "sendToWorkerQueue")           // se usar aqui tem que der um Job rodando a subsmissão das tasks na Queue
-    // @Fallback(fallbackMethod = "enqueueAndProcess")           // esse método pode ser usado com o @RunVirtualThread no Resource
+    // @Fallback(fallbackMethod = "sendToWorkerQueue") // se usar aqui tem que der
+    // um Job rodando a subsmissão das tasks na Queue
+    // @Fallback(fallbackMethod = "enqueueAndProcess") // esse método pode ser usado
+    // com o @RunVirtualThread no Resource
     @Fallback(fallbackMethod = "submitToWorker")
     public void sendToFallbackProcessor(Payment payment) {
         if (!health.isHealthy("fallback")) {
@@ -110,11 +114,14 @@ public class PaymentService {
         worker.enqueueAndProcess(payment);
     }
 
-    // Pode ser tanto o fallback para retentativa de envio que falhou, quanto o método de entrada do service para iniciar na Queue
+    // Pode ser tanto o fallback para retentativa de envio que falhou, quanto o
+    // método de entrada do service para iniciar na Queue
     public void submitToWorker(Payment payment) {
-        executor.execute(() -> {
-            sendToWorkerQueue(payment);
-        });
+        Runnable r = () -> {
+            worker.enqueueAndProcess(payment);
+        };
+
+        executor.submit(r);
     }
 
     /*

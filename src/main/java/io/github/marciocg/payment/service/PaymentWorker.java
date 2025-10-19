@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import io.github.marciocg.payment.model.Payment;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class PaymentWorker {
@@ -38,6 +39,7 @@ public class PaymentWorker {
         queue.offer(payment);
     }
 
+    @Transactional
     public void enqueueAndProcess(Payment payment) {
         queue.offer(payment);
         start();
