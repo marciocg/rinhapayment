@@ -50,8 +50,8 @@ public class Payment extends PanacheEntityBase {
         try (Stream<Payment> s = Payment.streamAll()) {
             Map<String, SummaryResponse> map = s
                 // .filter(p -> p.createdAt != null)
-                // .filter(p -> (from == null || !p.createdAt.isBefore(from)) && (to == null || !p.createdAt.isAfter(to)))
-                .filter(p -> (p.createdAt.isAfter(from) && p.createdAt.isBefore(to)))
+                .filter(p -> (from == null || !p.createdAt.isBefore(from)) && (to == null || !p.createdAt.isAfter(to)))
+                // .filter(p -> (p.createdAt.isAfter(from) && p.createdAt.isBefore(to)))          // está errado pois exclui os limites
                 .collect(Collectors.groupingBy(
                     p -> Objects.toString(p.paymentType, ""),
                     Collectors.collectingAndThen(Collectors.toList(), list -> {
