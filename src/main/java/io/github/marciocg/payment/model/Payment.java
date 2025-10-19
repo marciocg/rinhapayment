@@ -41,16 +41,17 @@ public class Payment extends PanacheEntityBase {
     public String paymentType;
     public Instant createdAt;
 
-    public static List<SummaryResponseByPaymentType> getSummaryByPaymentType(Instant from, Instant to) {
+/*     public static List<SummaryResponseByPaymentType> getSummaryByPaymentType(Instant from, Instant to) {
         PanacheQuery<SummaryResponseByPaymentType> query = find("Payment.getSummaryByPaymentType", Parameters.with("from", from).and("to", to)).project(SummaryResponseByPaymentType.class);
         return query.list();
-    }
+    } */
 
     public static Map<String, SummaryResponse> streamSummaryByPaymentType(Instant from, Instant to) {
         try (Stream<Payment> s = Payment.streamAll()) {
             Map<String, SummaryResponse> map = s
-                .filter(p -> p.createdAt != null)
-                .filter(p -> (from == null || !p.createdAt.isBefore(from)) && (to == null || !p.createdAt.isAfter(to)))
+                // .filter(p -> p.createdAt != null)
+                // .filter(p -> (from == null || !p.createdAt.isBefore(from)) && (to == null || !p.createdAt.isAfter(to)))
+                .filter(p -> (p.createdAt.isAfter(from) && p.createdAt.isBefore(to)))
                 .collect(Collectors.groupingBy(
                     p -> Objects.toString(p.paymentType, ""),
                     Collectors.collectingAndThen(Collectors.toList(), list -> {
