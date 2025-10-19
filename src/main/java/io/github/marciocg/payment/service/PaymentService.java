@@ -1,6 +1,8 @@
 package io.github.marciocg.payment.service;
 
 import java.time.Instant;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Retry;
@@ -21,6 +23,7 @@ public class PaymentService {
 
     // @Inject
     // RedisDataSource redis;
+    private final Executor executor = Executors.newVirtualThreadPerTaskExecutor();
 
     @Inject
     HealthCheckService health;
@@ -53,8 +56,9 @@ public class PaymentService {
     }
 
     @Retry(maxRetries = 2, delay = 200)
-    // @Fallback(fallbackMethod = "sendToWorkerQueue")
-    @Fallback(fallbackMethod = "enqueueAndProcess")
+    // @Fallback(fallbackMethod = "sendToWorkerQueue")           // se usar aqui tem que der um Job rodando a subsmissão das tasks na Queue
+    // @Fallback(fallbackMethod = "enqueueAndProcess")           // esse método pode ser usado com o @RunVirtualThread no Resource
+    @Fallback(fallbackMethod = "submitToWorker")
     public void sendToFallbackProcessor(Payment payment) {
         if (!health.isHealthy("fallback")) {
             Log.debug("[SKIP] Fallback processor is failing" + health.toString());
@@ -104,6 +108,13 @@ public class PaymentService {
 
     public void enqueueAndProcess(Payment payment) {
         worker.enqueueAndProcess(payment);
+    }
+
+    // Pode ser tanto o fallback para retentativa de envio que falhou, quanto o método de entrada do service para iniciar na Queue
+    public void submitToWorker(Payment payment) {
+        executor.execute(() -> {
+            sendToWorkerQueue(payment);
+        });
     }
 
     /*

@@ -41,12 +41,8 @@ public class PaymentResource {
         Payment payment = new Payment();
         payment.correlationId = request.correlationId();
         payment.amount = request.amount();
-/*         try {
-            service.sendToDefaultProcessor(payment);
-        } catch (Exception e) {
-            return Response.noContent().build();
-        } */
-        service.sendToDefaultProcessor(payment);
+        // service.sendToDefaultProcessor(payment);
+        service.submitToWorker(payment);
         return Response.accepted().build();
     }
 
