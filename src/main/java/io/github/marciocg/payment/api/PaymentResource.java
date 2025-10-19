@@ -38,6 +38,9 @@ public class PaymentResource {
     @Path("/payments")
     // @RunOnVirtualThread
     public Response receive(PaymentRequest request) {
+        if (request.correlationId() == null || request.amount() == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("correlationId and amount are required").build();
+        }
         Payment payment = new Payment();
         payment.correlationId = request.correlationId();
         payment.amount = request.amount();
